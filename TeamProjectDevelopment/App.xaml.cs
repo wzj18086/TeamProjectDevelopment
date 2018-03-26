@@ -13,5 +13,6 @@ namespace TeamProjectDevelopment
     /// </summary>
     public partial class App : Application
     {
+        //vs2017 test
     }
 }
