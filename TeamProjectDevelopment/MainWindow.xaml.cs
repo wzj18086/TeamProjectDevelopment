@@ -174,28 +174,37 @@ namespace AutomaticUpdate
                 {
                     UpdateMethod updateMethod = new UpdateMethod();
                     updateMethod.Show();
+                    this.Close();
                 }
             }
 
 
         }
+
+        //没有后缀名的文件名获取
         public static String GetFileNameWithonExtension(String path)
         {
             DirectoryInfo folder = new DirectoryInfo(path);
             String DbName = Path.GetFileNameWithoutExtension(folder.GetFiles("*.mdb")[0].Name);
             return DbName;
         }
+
+        //连接数据库
         public static OleDbConnection getConn(String conStr)
         {
             OleDbConnection oleDbConnection = new OleDbConnection(conStr);
             return oleDbConnection;
         }
+
+        //获取文件名字
         public static String GetFileName(String path)
         {
             DirectoryInfo folder = new DirectoryInfo(path);
             String DbName = Path.GetFileName(folder.GetFiles("*.mdb")[0].Name);
             return DbName;
         }
+
+        //连接数据库
         public static OleDbDataReader DbConnect(String path)
         {
             String DbName = GetFileName(path);

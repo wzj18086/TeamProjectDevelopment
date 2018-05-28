@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutomaticUpdate"
         mc:Ignorable="d"
-        Loaded="Window_Loaded"
         Title="更新" Height="298" Width="629.6">
     <Grid Margin="0,0,3.2,1">
         <Button Content="整体更新" HorizontalAlignment="Left" Margin="132,172,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" Height="27"/>

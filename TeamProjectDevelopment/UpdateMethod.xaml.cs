@@ -25,15 +25,24 @@ namespace AutomaticUpdate
 
         //选择整体更新
         private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Close();
+        {   
             EntireUpdate();
-            this.Close();
-            mainWindow.Show();
         }
 
-        //整体更新
+        //选择部分更新
+    
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            PartUpdate();
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+
+        //整体更新具体实现
         private void EntireUpdate()
         {
             String serverPath = ConfigurationSettings.AppSettings["serverAddress"];
@@ -62,19 +71,20 @@ namespace AutomaticUpdate
                 copyFile(originFile, tempStr);
             }
 
-            //最后复制配置文件
+            //最后复制服务器配置文件到本地，并删除原来的配置文件
             Console.WriteLine("success2");
             
+
             String localDbName = MainWindow.GetFileName(localPath);
-            copyFile(serverPath + "\\" + serverDbName, localPath+"\\" + serverDbName);
-            File.Delete(localPath+"\\"+localDbName);//删除本地配置文件
-            MessageBox.Show("更新完成", "提示", MessageBoxButton.OK);
+            copyFile(serverPath + "\\" + serverDbName, localPath + "\\" + serverDbName);
+            File.Delete(localPath + "\\" + localDbName);
+            SuccessTips();
+
 
         }
-        //部分更新
-        private int PartUpdate()
+        //部分更新具体实现
+        private void PartUpdate()
         {
-            int i = 0;//用来标识是否存在差异
             String localDbName = MainWindow.GetFileName(localPath);
             String localConStr = databaseCon+localPath+"\\"+localDbName;
             OleDbConnection localConnection = getConn(localConStr);
@@ -126,9 +136,6 @@ namespace AutomaticUpdate
                         String originFile = serverPath +"\\"+ serverFileName;
                         copyFile(originFile, tempStr);
 
-                        copyFile(serverPath + "\\" + serverDbName, localPath+"\\" + serverDbName);
-                        i++;
-
                         Console.WriteLine("name not equals ,copy finish");
                         break;
                     }
@@ -146,9 +153,6 @@ namespace AutomaticUpdate
                             String tempStr = (String)serverReader["path"];
                             String originFile = serverPath + serverFileName;
                             copyFile(originFile, tempStr);
-
-                            copyFile(serverPath + "\\" + serverDbName, localPath+"\\" + serverDbName);
-                            i++;
                             Console.WriteLine("name equals,copy finish");
                         }
                     }
@@ -164,16 +168,19 @@ namespace AutomaticUpdate
                 serverReader.Close();
             if(localConnection!=null)
                 localConnection.Close();
-            MessageBox.Show("更新完成", "提示", MessageBoxButton.OK);
-            return i;
+            copyFile(serverPath + "\\" + serverDbName, localPath + "\\" + serverDbName);
+            File.Delete(localPath + "\\" + localDbName);
+
+            SuccessTips();
         }
+        //连接数据库
         private OleDbConnection getConn(String conStr)
         {
 
             OleDbConnection oleDbConnection = new OleDbConnection(conStr);
             return oleDbConnection;
         }
-
+        //复制文件
         private void copyFile(String path, String targetDir)
         {
 
@@ -188,29 +195,18 @@ namespace AutomaticUpdate
 
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        //更新完之后提示
+        private void SuccessTips()
         {
-            
-            int i=PartUpdate();
-            if(i!=0)
+            MessageBoxResult result = MessageBox.Show("更新完成", "提示", MessageBoxButton.OK);
+
+            if (result == MessageBoxResult.OK)
             {
-                
-                String localDbName = MainWindow.GetFileName(localPath);
-                File.Delete(localPath+"\\" + localDbName);
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
+                this.Close();
+
             }
-            this.Close();
-            
-        }
-
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Close();
         }
     }
 }
