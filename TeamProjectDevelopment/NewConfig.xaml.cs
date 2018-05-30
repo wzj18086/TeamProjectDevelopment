@@ -94,14 +94,16 @@ namespace AutomaticUpdate
             cmd.Dispose();
             con.Close();
             con.Dispose();
-            MainWindow Window = new MainWindow();
+            NewConfigWindow newConfigWindow = new NewConfigWindow();
+            newConfigWindow.Show();
             this.Close();
-            Window.Show();
 
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            MainWindow Window = new MainWindow();
+            Window.Show();
             this.Close();
         }
     }
