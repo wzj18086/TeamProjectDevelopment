@@ -28,6 +28,7 @@ public class DbHelper
     static String localPath = ConfigurationSettings.AppSettings["localPath"];
     static String databaseCon= ConfigurationSettings.AppSettings["databaseCon"];
     static String serverPath = ConfigurationSettings.AppSettings["serverPath"];
+    
 
     public static OleDbConnection getCon()
     {
@@ -54,6 +55,15 @@ namespace AutomaticUpdate
     /// </summary>
     public partial class MainWindow : Window
     {
+        static string FileAddress;
+        string FileName;
+        long FileSize;
+        DateTime LastWriteTime;
+        DateTime CreationTime;
+        String ExtensionNumber;
+        String localVersion = "";
+        String serverVersion = "";
+
         String localPath = ConfigurationSettings.AppSettings["localPath"];
         static String serverPath = ConfigurationSettings.AppSettings["serverAddress"];
         static String databaseCon = ConfigurationSettings.AppSettings["databaseCon"];
@@ -75,7 +85,7 @@ namespace AutomaticUpdate
         //导入配置文件
         private void Import(object sender, RoutedEventArgs e)
         {
-            AutoUpdate();
+            
         }
 
         //修改网站
@@ -249,8 +259,7 @@ namespace AutomaticUpdate
             OleDbDataReader serverReader = MainWindow.DbConnect(serverPath);
             String localDbName = MainWindow.GetFileName(localPath);
             OleDbDataReader localReader = MainWindow.DbConnect(localPath);
-            String localVersion="";
-            String serverVersion="";
+            
             if (localReader.Read())
             {
                 localVersion = (String)localReader["版本号"];
@@ -297,6 +306,57 @@ namespace AutomaticUpdate
             }
             serverReader.Close();
             return false;
+        }
+        //导入新文件
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            
+            //ExtensionNumber = extension.Text;//版本号
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.Multiselect = false;
+            openFileDialog.Filter = "AllFiles|*.*";
+
+            if ((bool)openFileDialog.ShowDialog())
+            {
+                FileAddress = openFileDialog.FileName;
+                System.IO.FileInfo file = new System.IO.FileInfo(FileAddress);
+                FileName = file.Name;
+                FileSize = file.Length;
+                LastWriteTime = file.LastWriteTime.ToUniversalTime();
+                CreationTime = file.CreationTime.ToUniversalTime();
+
+
+            }
+
+            String localDbName = MainWindow.GetFileName(localPath);
+            String conStr = databaseCon + localPath + "\\" + localDbName;
+            OleDbConnection con = new OleDbConnection(conStr);
+            con.Open();
+            OleDbCommand cmd = new OleDbCommand();
+            cmd.Connection = con;
+
+            string sqlcmd2 = "select MAX(id) From config1";
+            cmd.CommandText = sqlcmd2;
+            int num = Convert.ToInt32(cmd.ExecuteScalar());
+            Console.WriteLine(num);
+            cmd.Dispose();
+            con.Close();
+            con.Dispose();
+            con = new OleDbConnection(conStr);
+            con.Open();
+            cmd = new OleDbCommand();
+            cmd.Connection = con;
+            string sqlcmd1 = "insert into config1 values(" + ++num + ",'" + FileName + "'," + FileSize + ",'" + CreationTime + "','" + LastWriteTime + "','" + FileAddress + "','" + localVersion + "')";
+            cmd.CommandText = sqlcmd1;
+            FileAddress = "0";
+            cmd.ExecuteNonQuery();
+            cmd.Dispose();
+            con.Close();
+            con.Dispose();
+
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
         }
     }
 

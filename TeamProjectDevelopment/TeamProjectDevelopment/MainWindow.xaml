@@ -11,7 +11,7 @@
         <Menu  x:Name="文件" HorizontalAlignment="Left" Height="36" VerticalAlignment="Top" Width="792" Grid.ColumnSpan="2">
             <MenuItem Header="新建配置文件" Height="33" Width="90" Click="MenuItem_Click">
                 <MenuItem Header="新建" Click="Setnewconfig" HorizontalAlignment="Left" Width="144"/>
-                <MenuItem Header="导入" Click="Import" HorizontalAlignment="Left" Width="144"/>
+                <MenuItem Header="导入配置文件" Click="Import" HorizontalAlignment="Left" Width="144"/>
             </MenuItem>
             <MenuItem Header="更改服务器地址" Click="ChangeAd" Height="33" Width="100"/>
             <MenuItem Header="生成版本" Height="33" Width="100" Click="MenuItem_Click_1"/>
@@ -40,6 +40,7 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+        <Button Content="导入新文件" HorizontalAlignment="Left" Margin="692,371,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
 
     </Grid>
 </Window>
