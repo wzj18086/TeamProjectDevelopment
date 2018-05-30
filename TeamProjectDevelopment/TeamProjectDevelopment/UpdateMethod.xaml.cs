@@ -77,7 +77,7 @@ namespace AutomaticUpdate
 
             String localDbName = MainWindow.GetFileName(localPath);
             copyFile(serverPath + "\\" + serverDbName, localPath + "\\" + serverDbName);
-            File.Delete(localPath + "\\" + localDbName);
+            //File.Delete(localPath + "\\" + localDbName);
             SuccessTips();
 
 
@@ -169,7 +169,7 @@ namespace AutomaticUpdate
             if(localConnection!=null)
                 localConnection.Close();
             copyFile(serverPath + "\\" + serverDbName, localPath + "\\" + serverDbName);
-            File.Delete(localPath + "\\" + localDbName);
+            //File.Delete(localPath + "\\" + localDbName);
 
             SuccessTips();
         }

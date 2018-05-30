@@ -8,6 +8,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Configuration;
 using AutomaticUpdate;
+using System.Diagnostics;
+using System.Reflection;
 
 public class ConfigFile
 {
@@ -25,6 +27,7 @@ public class DbHelper
     //获取配置文件中的路径
     static String localPath = ConfigurationSettings.AppSettings["localPath"];
     static String databaseCon= ConfigurationSettings.AppSettings["databaseCon"];
+    static String serverPath = ConfigurationSettings.AppSettings["serverPath"];
 
     public static OleDbConnection getCon()
     {
@@ -52,6 +55,7 @@ namespace AutomaticUpdate
     public partial class MainWindow : Window
     {
         String localPath = ConfigurationSettings.AppSettings["localPath"];
+        static String serverPath = ConfigurationSettings.AppSettings["serverAddress"];
         static String databaseCon = ConfigurationSettings.AppSettings["databaseCon"];
         private ObservableCollection<ConfigFile> list { get; set; }
         public MainWindow()
@@ -71,7 +75,7 @@ namespace AutomaticUpdate
         //导入配置文件
         private void Import(object sender, RoutedEventArgs e)
         {
-
+            AutoUpdate();
         }
 
         //修改网站
@@ -107,7 +111,7 @@ namespace AutomaticUpdate
         
         private void dg_SelectionChanged(object sender,RoutedEventArgs e)
         {
-
+            
         }
         
 
@@ -166,8 +170,30 @@ namespace AutomaticUpdate
             String serverDbName = GetFileNameWithonExtension(serverPath);
             //Console.WriteLine(serverDbName);
             String localDbName = GetFileNameWithonExtension(localPath);
+            if(AntoUpdateOrNot())
+            {
+                MessageBoxResult result = MessageBox.Show("当前软件需要更新", "提示", MessageBoxButton.OKCancel);
+                if(result==MessageBoxResult.OK)
+                {
+                    String filename = Assembly.GetExecutingAssembly().Location;
+                    File.Move(filename, filename + ".delete");
+                    File.Copy(serverPath + "\\" + "TeamProjectDevelopment.exe", filename);
+                    File.Delete(filename + ".delete");
 
-            if(int.Parse(localDbName) < int.Parse(serverDbName))
+                    String DbName = GetFileName(serverPath);
+                    String conStr = databaseCon + serverPath + "\\" + DbName;
+                    OleDbConnection connection = getConn(conStr);
+                    connection.Open();
+                    String selectString = "delete from config1 where 名称=\"TeamProjectDevelopment.exe\"";
+                    OleDbCommand command = new OleDbCommand(selectString, connection);
+                    command.ExecuteNonQuery();
+                    connection.Close();
+
+                    AutoUpdate();
+                }
+                
+            }
+            if(UpdateOrNot())
             {
                 MessageBoxResult result = MessageBox.Show("当前有版本更新，需要更新吗？", "更新", MessageBoxButton.OKCancel);
                 if(result==MessageBoxResult.OK)
@@ -216,6 +242,61 @@ namespace AutomaticUpdate
             connection.Open();
             OleDbDataReader reader = command.ExecuteReader();
             return reader;
+        }
+        public bool UpdateOrNot()
+        {
+            String serverDbName = MainWindow.GetFileName(serverPath);
+            OleDbDataReader serverReader = MainWindow.DbConnect(serverPath);
+            String localDbName = MainWindow.GetFileName(localPath);
+            OleDbDataReader localReader = MainWindow.DbConnect(localPath);
+            String localVersion="";
+            String serverVersion="";
+            if (localReader.Read())
+            {
+                localVersion = (String)localReader["版本号"];
+            }
+            if(serverReader.Read())
+            {
+                 serverVersion= (String)serverReader["版本号"];
+            }
+            
+            if (int.Parse(localVersion) < int.Parse(serverVersion))
+            {
+                serverReader.Close();
+                localReader.Close();
+                return true;
+            }
+            else
+            {
+                serverReader.Close();
+                localReader.Close();
+                return false;
+            }
+                
+
+        }
+        private void AutoUpdate()
+        {
+            Process p = new Process();
+            p.StartInfo.FileName = System.AppDomain.CurrentDomain.BaseDirectory + "TeamProjectDevelopment.exe";
+            p.StartInfo.UseShellExecute = false;
+            p.Start();
+            Application.Current.Shutdown();
+        }
+        private bool AntoUpdateOrNot()
+        {
+            String serverDbName = MainWindow.GetFileName(serverPath);
+            OleDbDataReader serverReader = MainWindow.DbConnect(serverPath);
+            while(serverReader.Read())
+            {
+                if(serverReader["名称"].Equals("TeamProjectDevelopment.exe"))
+                {
+                    serverReader.Close();
+                    return true;
+                }
+            }
+            serverReader.Close();
+            return false;
         }
     }
 
