@@ -99,18 +99,23 @@ namespace AutomaticUpdate
         //在datagrid中绑定数据库数据
         public void BindData()
         {
+            
             using (OleDbConnection connection = DbHelper.getCon())
             {
                 connection.Open();
                 OleDbDataAdapter adapter = new OleDbDataAdapter();
-                DataTable dataTable = new DataTable();
+                DataSet dataTable = new DataSet();
                 String selectString = "select * from config1";
                 OleDbCommand command = new OleDbCommand(selectString, connection);
                 adapter.SelectCommand = command;
                 adapter.Fill(dataTable);
-                dg.ItemsSource = dataTable.DefaultView;
+                dataTable.Tables[0].PrimaryKey = new DataColumn[] { dataTable.Tables[0].Columns[0] };
+                dg.ItemsSource = dataTable.Tables[0].DefaultView;
+
+                DataRow dr = dataTable.Tables[0].NewRow();
+                connection.Close();
             }
-            
+
         }
 
 
@@ -188,8 +193,9 @@ namespace AutomaticUpdate
                     String filename = Assembly.GetExecutingAssembly().Location;
                     File.Move(filename, filename + ".delete");
                     File.Copy(serverPath + "\\" + "TeamProjectDevelopment.exe", filename);
-                    File.Delete(filename + ".delete");
+                    
 
+                   
                     String DbName = GetFileName(serverPath);
                     String conStr = databaseCon + serverPath + "\\" + DbName;
                     OleDbConnection connection = getConn(conStr);
@@ -200,6 +206,12 @@ namespace AutomaticUpdate
                     connection.Close();
 
                     AutoUpdate();
+                    /*
+                    FileInfo file = new FileInfo(filename + ".delete");
+                    if (file.Attributes != FileAttributes.Normal)
+                        file.Attributes = FileAttributes.Normal;
+                    file.Delete();
+                    */
                 }
                 
             }
@@ -357,6 +369,39 @@ namespace AutomaticUpdate
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
             this.Close();
+        }
+
+        //修改
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            OleDbConnection connection = DbHelper.getCon();
+            connection.Open();
+            OleDbCommand cmd = connection.CreateCommand();
+
+            cmd.CommandText = "UPDATE config1 Set [名称]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[1].ToString().Trim() +
+                    "', [文件大小]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[2].ToString().Trim() +
+                    "', [创建日期]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[3].ToString().Trim() +
+                    "', [修改日期]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[4].ToString().Trim() +
+                    "', [path]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[5].ToString().Trim() +
+                    "', [版本号]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[6].ToString().Trim() +
+                    "' Where ID=" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[0].ToString().Trim();
+            cmd.ExecuteNonQuery();
+
+            connection.Close();
+            BindData();
+        }
+        //删除
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            OleDbConnection connection = DbHelper.getCon();
+            connection.Open();
+            OleDbCommand cmd = connection.CreateCommand();
+            string sql = "DELETE FROM config1 WHERE ID=" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[0].ToString().Trim();
+            cmd.CommandText = sql;
+            cmd.ExecuteNonQuery();
+
+            connection.Close();
+            BindData();
         }
     }
 

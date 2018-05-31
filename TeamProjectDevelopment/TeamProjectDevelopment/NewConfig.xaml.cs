@@ -25,16 +25,14 @@ namespace AutomaticUpdate
             InitializeComponent();
             FillDataGrid();
         }
+
+
+        int n = 2;
         private void FillDataGrid()
         {
-            
-            
-            String localDbName = MainWindow.GetFileName(localPath);
-            String conStr = databaseCon+localPath + "\\" + localDbName;
+            string ConString = System.Configuration.ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
             string CmdString = string.Empty;
-            //OleDbConnection Con = new OleDbConnection(ConString);
-            //Con.Open();
-            using (OleDbConnection con = new OleDbConnection(conStr))
+            using (OleDbConnection con = new OleDbConnection(ConString))
             {
                 CmdString = "SELECT * FROM config1";
                 OleDbCommand cmd = new OleDbCommand(CmdString, con);
@@ -43,16 +41,18 @@ namespace AutomaticUpdate
                 sda.Fill(dt);
                 grdEmployee.ItemsSource = dt.DefaultView;
             }
+
         }
         static string FileAddress;
-        static string FileName ;
-        static long FileSize ;
-        static DateTime LastWriteTime ;
-        static DateTime CreationTime ;
-        static String ExtensionNumber;
+        static string FileName;
+        static long FileSize;
+        static DateTime LastWriteTime;
+        static DateTime CreationTime;
+        static String asd;
+        static string SaveAddress;
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            ExtensionNumber = extension.Text;
+            asd = extension.Text;
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.Multiselect = false;
             openFileDialog.Filter = "AllFiles|*.*";
@@ -68,41 +68,55 @@ namespace AutomaticUpdate
 
 
             }
-           
-            String localDbName = MainWindow.GetFileName(localPath);
-            String conStr = databaseCon+localPath + "\\" + localDbName;
-            OleDbConnection con = new OleDbConnection(conStr);
-            con.Open();            
+            string ConString = System.Configuration.ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
+            OleDbConnection con = new OleDbConnection(ConString);
+            con.Open();
             OleDbCommand cmd = new OleDbCommand();
             cmd.Connection = con;
 
             string sqlcmd2 = "select MAX(id) From config1";
+            string str = "create table config" + n++ + "(id counter,名称 varchar(80),文件大小 varchar(80),创建日期 datetime,修改日期 datetime,路径 varchar(100),版本号 varchar(80));";
+
+            cmd = new OleDbCommand(str, con);
+            cmd.ExecuteNonQuery();
             cmd.CommandText = sqlcmd2;
-            int num =Convert.ToInt32(cmd.ExecuteScalar());
+            int num = Convert.ToInt32(cmd.ExecuteScalar());
             Console.WriteLine(num);
             cmd.Dispose();
             con.Close();
             con.Dispose();
-            con = new OleDbConnection(conStr);
+            con = new OleDbConnection(ConString);
             con.Open();
             cmd = new OleDbCommand();
             cmd.Connection = con;
-            string sqlcmd1 = "insert into config1 values(" + ++num + ",'" + FileName + "'," + FileSize + ",'" + CreationTime + "','" + LastWriteTime + "','" + FileAddress + "','"+ ExtensionNumber +"')";
+            string sqlcmd1 = "insert into config1 values(" + ++num + ",'" + FileName + "'," + FileSize + ",'" + CreationTime + "','" + LastWriteTime + "','" + FileAddress + "','" + asd + "')";
             cmd.CommandText = sqlcmd1;
             FileAddress = "0";
             cmd.ExecuteNonQuery();
             cmd.Dispose();
             con.Close();
             con.Dispose();
+            NewConfigWindow Window = new NewConfigWindow();
+            this.Close();
+            Window.Show();
+        }
+            private void Button_Click(object sender, RoutedEventArgs e)
+        {
             MainWindow Window = new MainWindow();
             this.Close();
             Window.Show();
-
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.Multiselect = false;
+            openFileDialog.Filter = "AllFiles|*.*";
+            openFileDialog.ShowDialog();
+            SaveAddress = openFileDialog.FileName;
+            //string ConString = System.Configuration.ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
+            FileInfo file = new FileInfo(SaveAddress);
+            file.CopyTo("D:\\3.mdb");
         }
     }
 }
