@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows;
 
 using System.Configuration;
+using System.Text;
 
 namespace AutomaticUpdate
 {
@@ -16,8 +17,10 @@ namespace AutomaticUpdate
     public partial class UpdateMethod : Window
     {
         //获取配置文件中的路径
-        String localPath = ConfigurationSettings.AppSettings["localPath"];
-        String databaseCon = ConfigurationSettings.AppSettings["databaseCon"];
+        static String localPath = ConfigurationSettings.AppSettings["localPath"];
+        static String databaseCon = ConfigurationSettings.AppSettings["databaseCon"];
+        static String serverPath = ConfigurationSettings.AppSettings["serverAddress"];
+        static String address = ConfigurationSettings.AppSettings["address"];
         public UpdateMethod()
         {
             InitializeComponent();
@@ -45,31 +48,18 @@ namespace AutomaticUpdate
         //整体更新具体实现
         private void EntireUpdate()
         {
-            String serverPath = ConfigurationSettings.AppSettings["serverAddress"];
-            try
-            {
-                if (File.Exists("address.txt"))
-                {
-                    FileStream file = new FileStream("address.txt", FileMode.Open);
-                    StreamReader reader1 = new StreamReader(file);
-                    String temp = reader1.ReadLine();
-                    serverPath = temp;
-                }
-            }
-            catch (IOException)
-            {
-
-            }
-            
+           
             String serverDbName = MainWindow.GetFileName(serverPath);
             OleDbDataReader reader = MainWindow.DbConnect(serverPath);
             while (reader.Read())
             {
                 String tempStr = (String)reader["path"];
-                String originFile = serverPath+"\\\\" + (String)reader["名称"];
+                String originFile = serverPath+"\\" + (String)reader["fileName"];
                 Console.WriteLine("success");
                 copyFile(originFile, tempStr);
             }
+            if(reader!=null)
+                reader.Close();
 
             //最后复制服务器配置文件到本地，并删除原来的配置文件
             Console.WriteLine("success2");
@@ -96,13 +86,11 @@ namespace AutomaticUpdate
             Console.WriteLine("part update");
             while (localReader.Read())
             {
-                localFileNames.Add((String)localReader["名称"]);
-                Console.WriteLine((String)localReader["名称"]);
+                localFileNames.Add((String)localReader["fileName"]);
+                Console.WriteLine((String)localReader["fileName"]);
             }
             localReader.Close();
 
-
-            String serverPath = ConfigurationSettings.AppSettings["serverAddress"];
             try
             {
                 if (File.Exists("address.txt"))
@@ -122,12 +110,12 @@ namespace AutomaticUpdate
             OleDbDataReader serverReader = MainWindow.DbConnect(serverPath);
             while (serverReader.Read())
             {
-                String serverFileName = (String)serverReader["名称"];
+                String serverFileName = (String)serverReader["fileName"];
                 Console.WriteLine(serverFileName);
                 while (newLocalReader.Read())
                 {
                     Console.WriteLine("localreader success");
-                    String localFileName = (String)newLocalReader["名称"];
+                    String localFileName = (String)newLocalReader["fileName"];
                     Console.WriteLine(localFileNames.Contains(serverFileName));
                     if (!localFileNames.Contains(serverFileName))
                     {
@@ -142,9 +130,9 @@ namespace AutomaticUpdate
                     else if (localFileName.Equals(serverFileName))
                     {
                         //当文件名相同时，继续比较服务器和本地文件的大小和路径，只要有不一样的，就复制文件
-                        String localFileSize = (String)newLocalReader["文件大小"];
+                        String localFileSize = (String)newLocalReader["fileSize"];
                         String localFilePath = (String)newLocalReader["path"];
-                        String serverFileSize = (String)serverReader["文件大小"];
+                        String serverFileSize = (String)serverReader["fileSize"];
                         String serverFilePath = (String)serverReader["path"];
 
                        
@@ -205,6 +193,26 @@ namespace AutomaticUpdate
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
                 this.Close();
+
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (File.Exists(address))
+                {
+                    FileStream file = new FileStream(address, FileMode.Open);
+                    StreamReader reader = new StreamReader(file);
+                    String temp = reader.ReadLine();
+                    serverPath = temp;
+                    file.Close();
+                    reader.Close();
+                }
+            }
+            catch (IOException)
+            {
 
             }
         }

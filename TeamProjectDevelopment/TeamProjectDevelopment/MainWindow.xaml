@@ -14,7 +14,10 @@
                 <MenuItem Header="导入配置文件" Click="Import" HorizontalAlignment="Left" Width="144"/>
             </MenuItem>
             <MenuItem Header="更改服务器地址" Click="ChangeAd" Height="33" Width="100"/>
-            <MenuItem Header="生成版本" Height="33" Width="100" Click="MenuItem_Click_1"/>
+            <MenuItem Header="生成版本" Height="33" Width="100" Click="MenuItem_Click_1">
+                <MenuItem Header="本地"  HorizontalAlignment="Left" Width="144" Click="LocalVerisonClick"/>
+                <MenuItem Header="其他"  HorizontalAlignment="Left" Width="144" Click="OtherVersionClick"/>
+            </MenuItem>
         </Menu>
 
         <DataGrid  Name="dg" Margin="0,41,-0.4,0" >

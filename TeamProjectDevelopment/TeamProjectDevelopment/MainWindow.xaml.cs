@@ -29,6 +29,7 @@ public class DbHelper
     static String databaseCon= ConfigurationSettings.AppSettings["databaseCon"];
     static String serverPath = ConfigurationSettings.AppSettings["serverPath"];
     
+    
 
     public static OleDbConnection getCon()
     {
@@ -61,14 +62,19 @@ namespace AutomaticUpdate
         DateTime LastWriteTime;
         DateTime CreationTime;
         String ExtensionNumber;
-        String localVersion = "";
-        String serverVersion = "";
+        int localVersion;
+        int serverVersion;
 
         String localPath = ConfigurationSettings.AppSettings["localPath"];
         static String serverPath = ConfigurationSettings.AppSettings["serverAddress"];
         static String databaseCon = ConfigurationSettings.AppSettings["databaseCon"];
+        static String versionFile = ConfigurationSettings.AppSettings["versionFile"];
+        static String otherDbs= ConfigurationSettings.AppSettings["otherDbs"];
+        static String address = ConfigurationSettings.AppSettings["address"];
         private ObservableCollection<ConfigFile> list { get; set; }
-        public MainWindow()
+        
+
+public MainWindow()
         {
             InitializeComponent();
             BindData();//绑定数据
@@ -133,16 +139,7 @@ namespace AutomaticUpdate
         //生成版本
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
-            String localDbName = GetFileName(localPath);
-            OleDbDataReader reader = DbConnect(localPath);
-            while (reader.Read())
-            {
-                String tempStr = (String)reader["path"];
-                String targetDir = @"F:\test\" + Path.GetFileName(tempStr);
-                copyFile(tempStr, targetDir);
-            }
-            copyFile(localPath+"\\" + localDbName, "F:\\test\\" + localDbName);
-            MessageBox.Show("生成版本成功", "提示", MessageBoxButton.OK);
+            
         }
 
         //复制文件
@@ -165,17 +162,18 @@ namespace AutomaticUpdate
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //获取配置文件中服务器地址
-            String serverPath = ConfigurationSettings.AppSettings["serverAddress"];
 
             //判断文件是否存在
             try
             {
-                if (File.Exists("address.txt"))
+                if (File.Exists(address))
                 {
-                    FileStream file = new FileStream("address.txt", FileMode.Open);
+                    FileStream file = new FileStream(address, FileMode.Open);
                     StreamReader reader = new StreamReader(file);
                     String temp = reader.ReadLine();
                     serverPath = temp;
+                    file.Close();
+                    reader.Close();
                 }
             }catch(IOException)
             {
@@ -183,6 +181,8 @@ namespace AutomaticUpdate
             }
            ;
             String serverDbName = GetFileNameWithonExtension(serverPath);
+            if (serverDbName == null)
+                return;
             //Console.WriteLine(serverDbName);
             String localDbName = GetFileNameWithonExtension(localPath);
             if(AntoUpdateOrNot())
@@ -200,18 +200,12 @@ namespace AutomaticUpdate
                     String conStr = databaseCon + serverPath + "\\" + DbName;
                     OleDbConnection connection = getConn(conStr);
                     connection.Open();
-                    String selectString = "delete from config1 where 名称=\"TeamProjectDevelopment.exe\"";
+                    String selectString = "delete from config1 where fileName=\"TeamProjectDevelopment.exe\"";
                     OleDbCommand command = new OleDbCommand(selectString, connection);
                     command.ExecuteNonQuery();
                     connection.Close();
 
                     AutoUpdate();
-                    /*
-                    FileInfo file = new FileInfo(filename + ".delete");
-                    if (file.Attributes != FileAttributes.Normal)
-                        file.Attributes = FileAttributes.Normal;
-                    file.Delete();
-                    */
                 }
                 
             }
@@ -233,8 +227,16 @@ namespace AutomaticUpdate
         public static String GetFileNameWithonExtension(String path)
         {
             DirectoryInfo folder = new DirectoryInfo(path);
-           
-            String DbName = Path.GetFileNameWithoutExtension(folder.GetFiles("*.mdb")[0].Name);
+            String DbName;
+            try
+            {
+                 DbName= Path.GetFileNameWithoutExtension(folder.GetFiles("*.mdb")[0].Name);
+            }
+            catch
+            {
+                return null;
+            }
+            
             return DbName;
         }
 
@@ -249,39 +251,61 @@ namespace AutomaticUpdate
         public static String GetFileName(String path)
         {
             DirectoryInfo folder = new DirectoryInfo(path);
-            String DbName = Path.GetFileName(folder.GetFiles("*.mdb")[0].Name);
+            String DbName;
+            try
+            {
+                DbName = Path.GetFileName(folder.GetFiles("*.mdb")[0].Name);
+            }
+            catch
+            {
+                return null;
+            }
+            
             return DbName;
         }
 
         //连接数据库
         public static OleDbDataReader DbConnect(String path)
         {
+            Console.WriteLine(path + "tetetetet");
             String DbName = GetFileName(path);
-            String conStr = databaseCon + path + "\\" + DbName;
+            String conStr = databaseCon + path + "\\"+ DbName;
             OleDbConnection connection = getConn(conStr);
             String selectString = "select * from config1";
             OleDbCommand command = new OleDbCommand(selectString, connection);
             connection.Open();
             OleDbDataReader reader = command.ExecuteReader();
+            
             return reader;
         }
         public bool UpdateOrNot()
         {
-            String serverDbName = MainWindow.GetFileName(serverPath);
+            String serverDbName =GetFileName(serverPath);
+            Console.WriteLine("updateornot" + serverPath);
+            if (serverDbName == null)
+                return false;
             OleDbDataReader serverReader = MainWindow.DbConnect(serverPath);
             String localDbName = MainWindow.GetFileName(localPath);
             OleDbDataReader localReader = MainWindow.DbConnect(localPath);
             
             if (localReader.Read())
             {
-                localVersion = (String)localReader["版本号"];
+                try
+                {
+                    localVersion = (int)localReader["versionNum"];
+                }
+                catch
+                {
+                    localVersion = 1;
+                }
+                
             }
             if(serverReader.Read())
             {
-                 serverVersion= (String)serverReader["版本号"];
+                 serverVersion= (int)serverReader["versionNum"];
             }
             
-            if (int.Parse(localVersion) < int.Parse(serverVersion))
+            if (localVersion < serverVersion)
             {
                 serverReader.Close();
                 localReader.Close();
@@ -307,10 +331,14 @@ namespace AutomaticUpdate
         private bool AntoUpdateOrNot()
         {
             String serverDbName = MainWindow.GetFileName(serverPath);
+            if(serverDbName==null)
+            {
+                return false;
+            }
             OleDbDataReader serverReader = MainWindow.DbConnect(serverPath);
             while(serverReader.Read())
             {
-                if(serverReader["名称"].Equals("TeamProjectDevelopment.exe"))
+                if(serverReader["fileName"].Equals("TeamProjectDevelopment.exe"))
                 {
                     serverReader.Close();
                     return true;
@@ -378,12 +406,12 @@ namespace AutomaticUpdate
             connection.Open();
             OleDbCommand cmd = connection.CreateCommand();
 
-            cmd.CommandText = "UPDATE config1 Set [名称]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[1].ToString().Trim() +
-                    "', [文件大小]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[2].ToString().Trim() +
-                    "', [创建日期]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[3].ToString().Trim() +
-                    "', [修改日期]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[4].ToString().Trim() +
+            cmd.CommandText = "UPDATE config1 Set [fileName]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[1].ToString().Trim() +
+                    "', [fileSize]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[2].ToString().Trim() +
+                    "', [createTime]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[3].ToString().Trim() +
+                    "', [modifiedTime]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[4].ToString().Trim() +
                     "', [path]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[5].ToString().Trim() +
-                    "', [版本号]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[6].ToString().Trim() +
+                    "', [versionNum]='" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[6].ToString().Trim() +
                     "' Where ID=" + ((DataRowView)this.dg.SelectedItem).Row.ItemArray[0].ToString().Trim();
             cmd.ExecuteNonQuery();
 
@@ -402,6 +430,62 @@ namespace AutomaticUpdate
 
             connection.Close();
             BindData();
+        }
+
+        //生成其他版本
+        private void GenerateOhtherVersion()
+        {
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.RestoreDirectory=true;
+            openFileDialog.Filter = "AllFiles|*.*";
+            openFileDialog.InitialDirectory = @"F:\vs2017 project\TeamProjectDevelopment\TeamProjectDevelopment\TeamProjectDevelopment\bin\otherDbs";
+            openFileDialog.ShowDialog();
+            String versionFilePath = openFileDialog.FileName;
+            try
+            {
+                String DbName = Path.GetFileName(versionFilePath);
+                String conString = databaseCon + versionFilePath;
+                String sql = "select * from config1";
+                OleDbConnection oleDbConnection = new OleDbConnection(conString);
+                OleDbCommand command = new OleDbCommand(sql, oleDbConnection);
+                oleDbConnection.Open();
+                OleDbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    String tempStr = (String)reader["path"];
+                    String targetDir = versionFile + "\\" + Path.GetFileName(tempStr);
+                    copyFile(tempStr, targetDir);
+                }
+                copyFile(versionFilePath, versionFile + "\\" + DbName);
+                oleDbConnection.Close();
+                MessageBox.Show("生成版本成功", "提示", MessageBoxButton.OK);
+            }
+            catch { }
+            
+
+        }
+        private void GenerateLocalVersion(String DbPath)
+        {
+            String DbName = GetFileName(DbPath);
+            OleDbDataReader reader = DbConnect(DbPath);
+            while (reader.Read())
+            {
+                String tempStr = (String)reader["path"];
+                String targetDir =versionFile+"\\" + Path.GetFileName(tempStr);
+                copyFile(tempStr, targetDir);
+            }
+            copyFile(DbPath + "\\" + DbName, versionFile+"\\" + DbName);
+            MessageBox.Show("生成版本成功", "提示", MessageBoxButton.OK);
+        }
+
+        private void LocalVerisonClick(object sender, RoutedEventArgs e)
+        {
+            GenerateLocalVersion(localPath);
+        }
+
+        private void OtherVersionClick(object sender, RoutedEventArgs e)
+        {
+            GenerateOhtherVersion();
         }
     }
 
