@@ -8,7 +8,23 @@
         
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <DataGrid  Name="grdEmployee" />
+        <DataGrid  Name="grdEmployee">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="更新方式" MinWidth="80" >
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <ComboBox Name="updateMethod">
+                                <ComboBoxItem>新增</ComboBoxItem>
+                                <ComboBoxItem>替换</ComboBoxItem>
+                                <ComboBoxItem>删除</ComboBoxItem>
+                            </ComboBox>
+
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
         <Button Content="导入" HorizontalAlignment="Left" Height="27" Margin="323,300,0,0" VerticalAlignment="Top" Width="72" Click="Button_Click_2"/>
         <Button Content="确定" HorizontalAlignment="Left" Height="27" Margin="472,300,0,0" VerticalAlignment="Top" Width="72" Click="Button_Click" RenderTransformOrigin="4.597,0.889"/>
         <TextBox Name ="extension" HorizontalAlignment="Left" Height="27" Margin="163,300,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="83" Text="1" RenderTransformOrigin="-0.373,1.833"/>

@@ -11,6 +11,7 @@ using System.Windows;
 using System.Configuration;
 using TeamProjectDevelopment;
 using ADOX;
+using System.Windows.Controls;
 
 namespace AutomaticUpdate
 {
@@ -50,8 +51,11 @@ namespace AutomaticUpdate
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             insertFile();
+            
             grdEmployee.ItemsSource = null;
             grdEmployee.ItemsSource = files;
+            
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -113,6 +117,7 @@ namespace AutomaticUpdate
             table.Columns.Append("modifiedTime", DataTypeEnum.adDate, 0);
             table.Columns.Append("path", DataTypeEnum.adLongVarWChar, 0);
             table.Columns.Append("versionNum", DataTypeEnum.adInteger, 0);
+            table.Columns.Append("updateMethod", DataTypeEnum.adVarWChar, 0);
 
             try
             {
@@ -165,16 +170,29 @@ namespace AutomaticUpdate
             String conString = databaseCon + otherDbs + versionNum + ".mdb";
             OleDbConnection connection = new OleDbConnection(conString);
             connection.Open();
-            foreach(MyFile file in files)
+            for(int i=0;i< files.Count;i++)
             {
-                String sqlcmd = "insert into config1 values(" + file.ID + ",'" + file.FileName + "'," + file.FileSize + ",'" + file.CreateTime + "','" + file.ModifiedTime + "','" + file.Path + "','" + versionNum + "')";
+                MyFile file = files[i];
+                String updateMethod=GetUpdateMethod(i);
+                String sqlcmd = "insert into config1 values(" + file.ID + ",'" + file.FileName + "'," + file.FileSize + ",'" + file.CreateTime + "','" + file.ModifiedTime + "','" + file.Path + "','" + versionNum + "','" +updateMethod +"')";
                 OleDbCommand command = new OleDbCommand(sqlcmd,connection);
                 command.ExecuteNonQuery();   
             }
+            
             connection.Close();
             
 
         }
+        private String  GetUpdateMethod(int i)
+        {
+            FrameworkElement item = grdEmployee.Columns[0].GetCellContent(grdEmployee.Items[i]);
+            DataGridTemplateColumn temp = grdEmployee.Columns[0] as DataGridTemplateColumn;
+            object c = temp.CellTemplate.FindName("updateMethod", item);
+            ComboBox b = c as ComboBox;
+            Console.WriteLine(b.Text);
+            return b.Text;
+        }
         
+
     }
 }

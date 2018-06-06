@@ -48,7 +48,6 @@ namespace AutomaticUpdate
         //整体更新具体实现
         private void EntireUpdate()
         {
-           
             String serverDbName = MainWindow.GetFileName(serverPath);
             OleDbDataReader reader = MainWindow.DbConnect(serverPath);
             while (reader.Read())

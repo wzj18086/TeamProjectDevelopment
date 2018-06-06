@@ -214,9 +214,12 @@ public MainWindow()
                 MessageBoxResult result = MessageBox.Show("当前有版本更新，需要更新吗？", "更新", MessageBoxButton.OKCancel);
                 if(result==MessageBoxResult.OK)
                 {
+                    /*
                     UpdateMethod updateMethod = new UpdateMethod();
                     updateMethod.Show();
                     this.Close();
+                    */
+                    Update();
                 }
             }
 
@@ -486,6 +489,46 @@ public MainWindow()
         private void OtherVersionClick(object sender, RoutedEventArgs e)
         {
             GenerateOhtherVersion();
+        }
+        private void Update()
+        {
+            String serverDbName = GetFileName(serverPath);
+            OleDbDataReader reader = DbConnect(serverPath);
+            while (reader.Read())
+            {
+                String tempStr = (String)reader["path"];
+                String originFile = serverPath + "\\" + (String)reader["fileName"];
+                Console.WriteLine("success");
+                String updateMethod = (String)reader["updateMethod"];
+                if (updateMethod.Equals("删除"))
+                    File.Delete(tempStr);
+                else
+                    copyFile(originFile, tempStr);
+            }
+            if (reader != null)
+                reader.Close();
+
+            //最后复制服务器配置文件到本地，并删除原来的配置文件
+            Console.WriteLine("success2");
+
+
+            String localDbName = MainWindow.GetFileName(localPath);
+            copyFile(serverPath + "\\" + serverDbName, localPath + "\\" + serverDbName);
+            //File.Delete(localPath + "\\" + localDbName);
+            SuccessTips();
+        }
+
+        private void SuccessTips()
+        {
+            MessageBoxResult result = MessageBox.Show("更新完成", "提示", MessageBoxButton.OK);
+
+            if (result == MessageBoxResult.OK)
+            {
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
+                this.Close();
+
+            }
         }
     }
 

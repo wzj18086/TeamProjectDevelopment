@@ -15,6 +15,8 @@ namespace TeamProjectDevelopment
         private DateTime modifiedTime;
         private String path;
         private int versionNum;
+        private String updateMethod;
+
         public int ID
         {
             get { return id; }
@@ -48,6 +50,11 @@ namespace TeamProjectDevelopment
         {
             get { return versionNum; }
             set { versionNum = value; }
+        }
+        public String UpdateMethod
+        {
+            get { return updateMethod; }
+            set { updateMethod = value; }
         }
     }
 }
