@@ -12,6 +12,7 @@ using System.Configuration;
 using TeamProjectDevelopment;
 using ADOX;
 using System.Windows.Controls;
+using Microsoft.Win32;
 
 namespace AutomaticUpdate
 {
@@ -27,19 +28,6 @@ namespace AutomaticUpdate
         String databaseCon = ConfigurationSettings.AppSettings["databaseCon"];
         String otherDbs= ConfigurationSettings.AppSettings["otherDbs"];
         static String address = ConfigurationSettings.AppSettings["address"];
-        public NewConfigWindow()
-        {
-            InitializeComponent();
-            FillDataGrid();
-        }
-
-
-        int n = 2;
-        private void FillDataGrid()
-        {
-            grdEmployee.ItemsSource = files;
-
-        }
         static string FileAddress;
         static string FileName;
         static long FileSize;
@@ -47,6 +35,13 @@ namespace AutomaticUpdate
         static DateTime CreationTime;
         static String asd;
         static string SaveAddress;
+
+
+        public NewConfigWindow()
+        {
+            InitializeComponent();
+            FillDataGrid();
+        }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
@@ -58,6 +53,7 @@ namespace AutomaticUpdate
 
         }
 
+        //确定
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             CreateDb();
@@ -67,18 +63,35 @@ namespace AutomaticUpdate
             Window.Show();
         }
 
+        //另存为
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
-            openFileDialog.Multiselect = false;
-            openFileDialog.Filter = "AllFiles|*.*";
-            openFileDialog.ShowDialog();
-            SaveAddress = openFileDialog.FileName;
-            //string ConString = System.Configuration.ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
-            FileInfo file = new FileInfo(SaveAddress);
-            file.CopyTo("D:\\3.mdb");
+            
+            
+            Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog();
+            //openFileDialog.Multiselect = false;
+            saveFileDialog.Filter = "mdb|*.*";
+            saveFileDialog.ShowDialog();
+            SaveAddress = saveFileDialog.FileName;
+            
+            CreateDb();
+            insertData();
+            String version = extension.Text;
+            
+            FileInfo file = new FileInfo(@"..\otherDbs\"+version+".mdb");
+            
+           
+            file.CopyTo(SaveAddress);
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
+            
+            
+            
+            
         }
 
+        //创建数据库
         private void CreateDb()
         {
             
@@ -133,10 +146,20 @@ namespace AutomaticUpdate
             table = null;
             catalog = null;
             //Application.DoEvents();
+            
             cn.Close();
 
 
         }
+
+        //绑定数据
+        private void FillDataGrid()
+        {
+            grdEmployee.ItemsSource = files;
+
+        }
+
+        //新建配置文件上的导入功能
         private void insertFile()
         {
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
@@ -149,7 +172,7 @@ namespace AutomaticUpdate
                 
                 FileAddress = openFileDialog.FileName;
                 myFile.Path = openFileDialog.FileName;
-                System.IO.FileInfo file = new System.IO.FileInfo(FileAddress);
+                FileInfo file = new System.IO.FileInfo(FileAddress);
                 myFile.ID = id;
                 myFile.FileName = file.Name;
                 myFile.FileSize = file.Length;
@@ -159,11 +182,7 @@ namespace AutomaticUpdate
                 files.Add(myFile);
             }
         }
-        private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
-            CreateDb();
-            insertData();
-        }
+        
         private void insertData()
         {
             String versionNum = extension.Text;
@@ -176,10 +195,12 @@ namespace AutomaticUpdate
                 String updateMethod=GetUpdateMethod(i);
                 String sqlcmd = "insert into config1 values(" + file.ID + ",'" + file.FileName + "'," + file.FileSize + ",'" + file.CreateTime + "','" + file.ModifiedTime + "','" + file.Path + "','" + versionNum + "','" +updateMethod +"')";
                 OleDbCommand command = new OleDbCommand(sqlcmd,connection);
-                command.ExecuteNonQuery();   
+                command.ExecuteNonQuery();
+                command = null;
             }
-            
+            connection.Dispose();
             connection.Close();
+            
             
 
         }
@@ -189,7 +210,6 @@ namespace AutomaticUpdate
             DataGridTemplateColumn temp = grdEmployee.Columns[0] as DataGridTemplateColumn;
             object c = temp.CellTemplate.FindName("updateMethod", item);
             ComboBox b = c as ComboBox;
-            Console.WriteLine(b.Text);
             return b.Text;
         }
         
