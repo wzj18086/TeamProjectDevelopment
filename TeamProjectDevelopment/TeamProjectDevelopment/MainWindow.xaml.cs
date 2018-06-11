@@ -10,6 +10,7 @@ using System.Configuration;
 using AutomaticUpdate;
 using System.Diagnostics;
 using System.Reflection;
+using TeamProjectDevelopment;
 
 public class ConfigFile
 {
@@ -57,6 +58,7 @@ namespace AutomaticUpdate
     public partial class MainWindow : Window
     {
         static string FileAddress;
+        static string dataBaseAddress;
         string FileName;
         long FileSize;
         DateTime LastWriteTime;
@@ -155,12 +157,14 @@ public MainWindow()
         {
             NewConfigWindow setting = new NewConfigWindow();
             setting.Show();
-            this.Close();
+          
         }
         //导入配置文件
         private void Import(object sender, RoutedEventArgs e)
         {
-            
+           
+            import window = new import();
+            window.Show();
         }
 
         //修改服务器地址
