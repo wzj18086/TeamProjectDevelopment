@@ -1,8 +1,10 @@
-﻿using System;
+﻿using AutomaticUpdate;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +25,7 @@ namespace TeamProjectDevelopment
     public partial class import : Window
     {
         static string dataBaseAddress;
+        static string SaveAddress;
         static String databaseCon = ConfigurationSettings.AppSettings["databaseCon"];
         public import()
         {
@@ -58,7 +61,28 @@ namespace TeamProjectDevelopment
             connection.Close();
             
         }
-       
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            //MainWindow window = new MainWindow();
+            //window.Show();
+            this.Close();
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+
+            Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog();
+            //openFileDialog.Multiselect = false;
+            saveFileDialog.Filter = "mdb|*.*";
+            saveFileDialog.ShowDialog();
+            SaveAddress = saveFileDialog.FileName;
+            String version = extension.Text;
+            FileInfo file = new FileInfo(@"..\otherDbs\" + version + ".mdb");
+            file.CopyTo(SaveAddress);
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
+        }
     }
 }

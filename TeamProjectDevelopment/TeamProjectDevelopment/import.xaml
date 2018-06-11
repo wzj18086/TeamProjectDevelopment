@@ -11,11 +11,27 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <DataGrid Name="dg" HorizontalAlignment="Left" Height="419" VerticalAlignment="Top" Width="792" >
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="更新方式" MinWidth="80" >
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <ComboBox Name="updateMethod">
+                                <ComboBoxItem>新增</ComboBoxItem>
+                                <ComboBoxItem>替换</ComboBoxItem>
+                                <ComboBoxItem>删除</ComboBoxItem>
+                            </ComboBox>
 
-            <!--<DataGridTextColumn Header="ID" Binding="{Binding Name,UpdateSourceTrigger=PropertyChanged}">
-            </DataGridTextColumn>-->
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
         </DataGrid>
-        <Button Content="导入" HorizontalAlignment="Left" Height="29" Margin="337,354,0,0" VerticalAlignment="Top" Width="68" Click="Button_Click"/>
+        <Button Content="导入" HorizontalAlignment="Left" Height="29" Margin="370,324,0,0" VerticalAlignment="Top" Width="68" Click="Button_Click"/>
+        <Button Content="确定" HorizontalAlignment="Left" Height="29" Margin="522,324,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click_1"/>
+        <Button Content="另存为" HorizontalAlignment="Left" Height="29" Margin="661,324,0,0" VerticalAlignment="Top" Width="79" Click="Button_Click_2"/>
+        <TextBox Name="extension" HorizontalAlignment="Left" Height="29" Margin="221,324,0,0" TextWrapping="Wrap" Text="1.0" VerticalAlignment="Top" Width="75"/>
+        <Label Content="版本号：" HorizontalAlignment="Left" Height="29" Margin="163,324,0,0" VerticalAlignment="Top" Width="53" RenderTransformOrigin="0.17,-0.828"/>
 
 
     </Grid>
