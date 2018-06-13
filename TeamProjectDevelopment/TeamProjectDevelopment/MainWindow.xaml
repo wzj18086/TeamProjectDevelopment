@@ -9,23 +9,36 @@
         Title="自动更新软件" Height="450" Width="800">
     <Grid>
         <Menu  x:Name="文件" HorizontalAlignment="Left" Height="36" VerticalAlignment="Top" Width="792" Grid.ColumnSpan="2">
-            <MenuItem Header="新建配置文件" Height="33" Width="90" Click="MenuItem_Click">
-                <MenuItem Header="新建" Click="Setnewconfig" HorizontalAlignment="Left" Width="144"/>
-                <MenuItem Header="导入配置文件" Click="Import" HorizontalAlignment="Left" Width="144"/>
-            </MenuItem>
             <MenuItem Header="更改服务器地址" Click="ChangeAd" Height="33" Width="100"/>
             <MenuItem Header="生成版本" Height="33" Width="100" Click="MenuItem_Click_1">
                 <MenuItem Header="本地"  HorizontalAlignment="Left" Width="144" Click="LocalVerisonClick"/>
                 <MenuItem Header="其他"  HorizontalAlignment="Left" Width="144" Click="OtherVersionClick"/>
             </MenuItem>
         </Menu>
+        <Grid>
+            <DataGrid  Name="dg" Margin="0,45,-0.4,0"  >
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="更新方式" MinWidth="80"  >
+                        <DataGridTemplateColumn.CellTemplate >
+                            <DataTemplate>
+                                <ComboBox Name="updateMethod">
+                                    <ComboBoxItem>新增</ComboBoxItem>
+                                    <ComboBoxItem>替换</ComboBoxItem>
+                                    <ComboBoxItem>删除</ComboBoxItem>
+                                </ComboBox>
 
-        <DataGrid  Name="dg" Margin="0,41,-0.4,0" >
-            
-        </DataGrid>
-        <Button Content="导入新文件" HorizontalAlignment="Left" Margin="692,371,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Button Content="修改" HorizontalAlignment="Left" Margin="61,321,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
-        <Button Content="删除" HorizontalAlignment="Left" Margin="184,321,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
 
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button Content="导入" HorizontalAlignment="Left" Height="27" Margin="323,300,0,0" VerticalAlignment="Top" Width="72" Click="Button_Click_2"/>
+            <Button Content="确定" HorizontalAlignment="Left" Height="27" Margin="472,300,0,0" VerticalAlignment="Top" Width="72" Click="Button_Click" RenderTransformOrigin="4.597,0.889"/>
+            <TextBox Name ="extension" HorizontalAlignment="Left" Height="27" Margin="163,300,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="83" Text="1" RenderTransformOrigin="-0.373,1.833"/>
+            <Label Content="版本号：" HorizontalAlignment="Left" Height="27" Margin="97,300,0,0" VerticalAlignment="Top" Width="48"/>
+            <Button Content="另存为" HorizontalAlignment="Left" Height="27" Margin="603,300,0,0" VerticalAlignment="Top" Width="79" Click="Button_Click_1"/>
+
+        </Grid>
     </Grid>
 </Window>

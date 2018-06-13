@@ -60,9 +60,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MyFile.cs" />
-    <Compile Include="NewConfig.xaml.cs">
-      <DependentUpon>NewConfig.xaml</DependentUpon>
-    </Compile>
     <Compile Include="WebSetting.xaml.cs">
       <DependentUpon>WebSetting.xaml</DependentUpon>
     </Compile>
@@ -71,10 +68,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="NewConfig.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
