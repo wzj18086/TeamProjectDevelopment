@@ -10,16 +10,13 @@ using System.Configuration;
 using AutomaticUpdate;
 using System.Diagnostics;
 using System.Reflection;
-<<<<<<< HEAD
 using System.Text;
 using System.Threading.Tasks;
 using TeamProjectDevelopment;
 using ADOX;
 using System.Windows.Controls;
 using Microsoft.Win32;
-=======
-using TeamProjectDevelopment;
->>>>>>> 112c9dfa2920bfc8bc32b0ee897bbe7bf08b6898
+
 
 public class ConfigFile
 {
@@ -164,24 +161,6 @@ public MainWindow()
 
 
         }
-
-<<<<<<< HEAD
-=======
-        //新建配置文件
-        private void Setnewconfig(object sender, RoutedEventArgs e)
-        {
-            NewConfigWindow setting = new NewConfigWindow();
-            setting.Show();
-          
-        }
-        //导入配置文件
-        private void Import(object sender, RoutedEventArgs e)
-        {
-           
-            import window = new import();
-            window.Show();
-        }
->>>>>>> 112c9dfa2920bfc8bc32b0ee897bbe7bf08b6898
 
         //修改服务器地址
         private void ChangeAd(object sender, RoutedEventArgs e)
