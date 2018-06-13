@@ -1,0 +1,38 @@
+﻿<Window x:Class="TeamProjectDevelopment.import"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TeamProjectDevelopment"
+        mc:Ignorable="d"
+        Title="import" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <DataGrid Name="dg" HorizontalAlignment="Left" Height="419" VerticalAlignment="Top" Width="792" >
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="更新方式" MinWidth="80" >
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <ComboBox Name="updateMethod">
+                                <ComboBoxItem>新增</ComboBoxItem>
+                                <ComboBoxItem>替换</ComboBoxItem>
+                                <ComboBoxItem>删除</ComboBoxItem>
+                            </ComboBox>
+
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Content="导入" HorizontalAlignment="Left" Height="29" Margin="370,324,0,0" VerticalAlignment="Top" Width="68" Click="Button_Click"/>
+        <Button Content="确定" HorizontalAlignment="Left" Height="29" Margin="522,324,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click_1"/>
+        <Button Content="另存为" HorizontalAlignment="Left" Height="29" Margin="661,324,0,0" VerticalAlignment="Top" Width="79" Click="Button_Click_2"/>
+        <TextBox Name="extension" HorizontalAlignment="Left" Height="29" Margin="221,324,0,0" TextWrapping="Wrap" Text="1.0" VerticalAlignment="Top" Width="75"/>
+        <Label Content="版本号：" HorizontalAlignment="Left" Height="29" Margin="163,324,0,0" VerticalAlignment="Top" Width="53" RenderTransformOrigin="0.17,-0.828"/>
+
+
+    </Grid>
+</Window>
