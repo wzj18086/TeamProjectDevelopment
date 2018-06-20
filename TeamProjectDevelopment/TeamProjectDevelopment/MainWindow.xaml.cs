@@ -472,9 +472,9 @@ public MainWindow()
                 var dt = dataTable.Tables[0];
                 dataTable.Tables[0].PrimaryKey = new DataColumn[] { dataTable.Tables[0].Columns[0] };
                 dg.ItemsSource = dataTable.Tables[0].DefaultView;
+                connection.Close();
 
                 DataRow dr = dataTable.Tables[0].NewRow();
-                connection.Close();
 
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
