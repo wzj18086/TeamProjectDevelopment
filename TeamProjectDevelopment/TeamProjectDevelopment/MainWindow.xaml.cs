@@ -162,6 +162,12 @@ public MainWindow()
 
         }
 
+        private void Import(object sender, RoutedEventArgs e)
+        {
+            import import = new import();
+            import.Show();
+        }
+
         //修改服务器地址
         private void ChangeAd(object sender, RoutedEventArgs e)
         {

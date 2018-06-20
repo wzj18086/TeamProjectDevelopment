@@ -9,6 +9,9 @@
         Title="自动更新软件" Height="450" Width="800">
     <Grid>
         <Menu  x:Name="文件" HorizontalAlignment="Left" Height="36" VerticalAlignment="Top" Width="792" Grid.ColumnSpan="2">
+            <MenuItem Header="新建配置文件" Height="33" Width="90" Click="MenuItem_Click">
+                <MenuItem Header="导入" Click="Import" HorizontalAlignment="Left" Width="144"/>
+            </MenuItem>
             <MenuItem Header="更改服务器地址" Click="ChangeAd" Height="33" Width="100"/>
             <MenuItem Header="生成版本" Height="33" Width="100" Click="MenuItem_Click_1">
                 <MenuItem Header="本地"  HorizontalAlignment="Left" Width="144" Click="LocalVerisonClick"/>
