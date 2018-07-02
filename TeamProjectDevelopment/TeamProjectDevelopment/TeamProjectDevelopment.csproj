@@ -47,6 +47,10 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="test, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\test3\TeamProjectDevelopment\TeamProjectDevelopment\TeamProjectDevelopment\bin\Debug\test.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -56,6 +60,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CreateConfig\CreateConfig.cs" />
+    <Compile Include="CreateConfig\CreateDb.cs" />
+    <Compile Include="CreateConfig\DbHelper.cs" />
+    <Compile Include="CreateConfig\InsertFile.cs" />
+    <Compile Include="FileSolver\CopyFile.cs" />
+    <Compile Include="FileSolver\GetFileName.cs" />
+    <Compile Include="GenerateOhtherVersion.cs" />
+    <Compile Include="GenerateVersion\GenerateLocalVersion.cs" />
+    <Compile Include="GenerateVersion\GenerateOtherVersion.cs" />
     <Compile Include="import.xaml.cs">
       <DependentUpon>import.xaml</DependentUpon>
     </Compile>
@@ -63,6 +76,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MyFile.cs" />
+    <Compile Include="Update\Update.cs" />
     <Compile Include="WebSetting.xaml.cs">
       <DependentUpon>WebSetting.xaml</DependentUpon>
     </Compile>
@@ -140,5 +154,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

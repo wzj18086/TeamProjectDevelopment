@@ -32,6 +32,7 @@
         <Button Content="另存为" HorizontalAlignment="Left" Height="29" Margin="661,324,0,0" VerticalAlignment="Top" Width="79" Click="Button_Click_2"/>
         <TextBox Name="extension" HorizontalAlignment="Left" Height="29" Margin="221,324,0,0" TextWrapping="Wrap" Text="1.0" VerticalAlignment="Top" Width="75"/>
         <Label Content="版本号：" HorizontalAlignment="Left" Height="29" Margin="163,324,0,0" VerticalAlignment="Top" Width="53" RenderTransformOrigin="0.17,-0.828"/>
+        <Button Content="导入配置文件" HorizontalAlignment="Left" Margin="25,327,0,0" VerticalAlignment="Top" Width="81" Height="26" Click="Button_Click_3"/>
 
 
     </Grid>
